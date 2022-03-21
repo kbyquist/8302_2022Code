@@ -10,6 +10,9 @@
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SendableChooser.h>
 #include "Controller.h"
+#include "pneumatics.h"
+#include <frc/Timer.h>
+#include <units/time.h>
 
 class Robot : public frc::TimedRobot {
  public:
@@ -27,11 +30,15 @@ class Robot : public frc::TimedRobot {
  private:
 
   Drive drivebase{};
+  Pneumatics pneumatics{};
+  
+  frc::Timer autoTimer;
 
   frc::Joystick driver_joy{0};
   frc::Joystick operator_joy{1};
   frc::SendableChooser<std::string> m_chooser;
-  const std::string kAutoNameDefault = "Default";
-  const std::string kAutoNameCustom = "My Auto";
+  const std::string kAutoNameDefault = "Do Not Move";
+  const std::string kAutoNameCustom = "Go Forward";
+  const std::string kAutoNameCustom2 = "Release 1 Cargo, then move";
   std::string m_autoSelected;
 };

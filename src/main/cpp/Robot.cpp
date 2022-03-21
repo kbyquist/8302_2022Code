@@ -6,12 +6,14 @@
 #include <fmt/core.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 
+
 void Robot::RobotInit() {
   m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
   m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
 
   drivebase.RobotInit();
+  pneumatics.RobotInit();
 }
 
 /**
@@ -42,7 +44,11 @@ void Robot::AutonomousInit() {
   fmt::print("Auto selected: {}\n", m_autoSelected);
 
   if (m_autoSelected == kAutoNameCustom) {
-    // Custom Auto goes here
+    autoTimer.Reset();
+    autoTimer.Start();
+  } else if (m_autoSelected == kAutoNameCustom2) {
+    autoTimer.Reset();
+    autoTimer.Start();
   } else {
     // Default Auto goes here
   }
@@ -50,7 +56,20 @@ void Robot::AutonomousInit() {
 
 void Robot::AutonomousPeriodic() {
   if (m_autoSelected == kAutoNameCustom) {
-    // Custom Auto goes here
+    if (autoTimer.Get() < 3_s) {
+      drivebase.m_drive.ArcadeDrive(.75,0,false);
+    } else {
+      drivebase.m_drive.ArcadeDrive(0,0,false);
+    }
+  } else if (m_autoSelected == kAutoNameCustom2) {
+    if (autoTimer.Get() < 5_s) {
+      drivebase.m_drive.ArcadeDrive(0,0,false);
+      pneumatics.CargoDoorDown();
+    } else if (autoTimer.Get() > 5_s && autoTimer.Get() < 8_s) {
+      drivebase.m_drive.ArcadeDrive(.75,0,false);
+    } else {
+      drivebase.m_drive.ArcadeDrive(0,0,false);
+    }
   } else {
     // Default Auto goes here
   }
@@ -59,9 +78,19 @@ void Robot::AutonomousPeriodic() {
 void Robot::TeleopInit() {}
 
 void Robot::TeleopPeriodic() {
+  drivebase.m_drive.ArcadeDrive(driver_joy.GetRawAxis(controller::kLStickY), driver_joy.GetRawAxis(controller::kRStickX),true);
 
-drivebase.tankdrive(driver_joy.GetRawAxis(controller::kLStickY)/10,driver_joy.GetRawAxis(controller::kRStickY)/10);
+  if(driver_joy.GetRawButton(controller::kAButton)){
+    pneumatics.CargoDoorDown();
+  } else {
+    pneumatics.CargoDoorUp();
+  }
 
+  if(driver_joy.GetRawButton(controller::kYButton)) {
+    pneumatics.StabilizerDeploy();
+  } else {
+    pneumatics.StabilizerRetract();
+  }
 }
 
 void Robot::DisabledInit() {}
