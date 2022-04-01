@@ -10,7 +10,9 @@
 void Robot::RobotInit() {
   m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
   m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
+  m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom2);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
+  
 
   drivebase.RobotInit();
   pneumatics.RobotInit();
@@ -56,8 +58,8 @@ void Robot::AutonomousInit() {
 
 void Robot::AutonomousPeriodic() {
   if (m_autoSelected == kAutoNameCustom) {
-    if (autoTimer.Get() < 3_s) {
-      drivebase.m_drive.ArcadeDrive(.75,0,false);
+    if (autoTimer.Get() < 2_s) {
+      drivebase.m_drive.ArcadeDrive(.65,0,false);
     } else {
       drivebase.m_drive.ArcadeDrive(0,0,false);
     }
@@ -66,7 +68,7 @@ void Robot::AutonomousPeriodic() {
       drivebase.m_drive.ArcadeDrive(0,0,false);
       pneumatics.CargoDoorDown();
     } else if (autoTimer.Get() > 5_s && autoTimer.Get() < 8_s) {
-      drivebase.m_drive.ArcadeDrive(.75,0,false);
+      drivebase.m_drive.ArcadeDrive(.65,0,false);
     } else {
       drivebase.m_drive.ArcadeDrive(0,0,false);
     }
@@ -78,7 +80,7 @@ void Robot::AutonomousPeriodic() {
 void Robot::TeleopInit() {}
 
 void Robot::TeleopPeriodic() {
-  drivebase.m_drive.ArcadeDrive(driver_joy.GetRawAxis(controller::kLStickY), driver_joy.GetRawAxis(controller::kRStickX),true);
+  drivebase.m_drive.ArcadeDrive(driver_joy.GetRawAxis(controller::kRStickX),-driver_joy.GetRawAxis(controller::kLStickY),true);
 
   if(driver_joy.GetRawButton(controller::kAButton)){
     pneumatics.CargoDoorDown();
