@@ -12,6 +12,10 @@ namespace drive{
     constexpr bool kLeftInverted = false;
     constexpr bool kRightInverted = true;
     constexpr int kCurrentLimit = 125;
+
+    double kSpinRate = .45; //makes robot turn faster or slower; more = faster
+    double kAccelTime =  .55; //time for robot to accelerate to full speed
+    double kAccelRate = 0.02 / kAccelTime; //amount to add to power per period to accelerate in correct time
 }
 
 namespace pneumatics{

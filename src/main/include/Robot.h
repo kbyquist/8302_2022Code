@@ -13,6 +13,7 @@
 #include "pneumatics.h"
 #include <frc/Timer.h>
 #include <units/time.h>
+#include <frc/shuffleboard/Shuffleboard.h>
 
 class Robot : public frc::TimedRobot {
  public:
@@ -27,7 +28,7 @@ class Robot : public frc::TimedRobot {
   void TestInit() override;
   void TestPeriodic() override;
 
- private:
+  private:
 
   Drive drivebase{};
   Pneumatics pneumatics{};
@@ -37,8 +38,8 @@ class Robot : public frc::TimedRobot {
   frc::Joystick driver_joy{0};
   frc::Joystick operator_joy{1};
   frc::SendableChooser<std::string> m_chooser;
-  const std::string kAutoNameDefault = "Do Not Move";
-  const std::string kAutoNameCustom = "Go Forward";
-  const std::string kAutoNameCustom2 = "Release 1 Cargo, then move";
+  const std::string kAuto1 = "Do Not Move";
+  const std::string kAuto2 = "Go Backwards";
+  const std::string kAuto3 = "Release 1 Cargo, then backwards";
   std::string m_autoSelected;
 };

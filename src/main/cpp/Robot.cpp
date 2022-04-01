@@ -6,11 +6,17 @@
 #include <fmt/core.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 
+using namespace frc;
 
 void Robot::RobotInit() {
-  m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
-  m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
-  frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
+  m_chooser.SetDefaultOption(kAuto1, kAuto1);
+  m_chooser.AddOption(kAuto2, kAuto2);
+  m_chooser.AddOption(kAuto3, kAuto3);
+  Shuffleboard::GetTab("Auto Selections")
+    .Add("Auto Mode", m_chooser)
+    .WithSize(2,1)
+    .WithPosition(0,0)
+    .WithWidget(BuiltInWidgets::kComboBoxChooser);
 
   drivebase.RobotInit();
   pneumatics.RobotInit();
@@ -41,12 +47,12 @@ void Robot::AutonomousInit() {
   m_autoSelected = m_chooser.GetSelected();
   // m_autoSelected = SmartDashboard::GetString("Auto Selector",
   //     kAutoNameDefault);
-  fmt::print("Auto selected: {}\n", m_autoSelected);
+  //fmt::print("Auto selected: {}\n", m_autoSelected);
 
-  if (m_autoSelected == kAutoNameCustom) {
+  if (m_autoSelected == kAuto2) {
     autoTimer.Reset();
     autoTimer.Start();
-  } else if (m_autoSelected == kAutoNameCustom2) {
+  } else if (m_autoSelected == kAuto3) {
     autoTimer.Reset();
     autoTimer.Start();
   } else {
@@ -55,20 +61,20 @@ void Robot::AutonomousInit() {
 }
 
 void Robot::AutonomousPeriodic() {
-  if (m_autoSelected == kAutoNameCustom) {
+  if (m_autoSelected == kAuto2) {
     if (autoTimer.Get() < 3_s) {
-      drivebase.m_drive.ArcadeDrive(.75,0,false);
+      drivebase.arrowDriveAccel(-.75,0,1);
     } else {
-      drivebase.m_drive.ArcadeDrive(0,0,false);
+      drivebase.arrowDriveAccel(0,0,1);
     }
-  } else if (m_autoSelected == kAutoNameCustom2) {
-    if (autoTimer.Get() < 5_s) {
-      drivebase.m_drive.ArcadeDrive(0,0,false);
+  } else if (m_autoSelected == kAuto3) {
+    if (autoTimer.Get() <= 3_s) {
+      drivebase.arrowDriveAccel(0,0,1);
       pneumatics.CargoDoorDown();
-    } else if (autoTimer.Get() > 5_s && autoTimer.Get() < 8_s) {
-      drivebase.m_drive.ArcadeDrive(.75,0,false);
+    } else if (autoTimer.Get() > 3_s && autoTimer.Get() < 8_s) {
+      drivebase.arrowDriveAccel(-.75,0,1);
     } else {
-      drivebase.m_drive.ArcadeDrive(0,0,false);
+      drivebase.arrowDriveAccel(0,0,1);
     }
   } else {
     // Default Auto goes here
@@ -78,7 +84,7 @@ void Robot::AutonomousPeriodic() {
 void Robot::TeleopInit() {}
 
 void Robot::TeleopPeriodic() {
-  drivebase.m_drive.ArcadeDrive(driver_joy.GetRawAxis(controller::kLStickY), driver_joy.GetRawAxis(controller::kRStickX),true);
+  drivebase.arrowDriveAccel(driver_joy.GetRawAxis(controller::kLStickY), driver_joy.GetRawAxis(controller::kRStickX), 1);
 
   if(driver_joy.GetRawButton(controller::kAButton)){
     pneumatics.CargoDoorDown();
